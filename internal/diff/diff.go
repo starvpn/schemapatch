@@ -55,6 +55,13 @@ func (e *DiffEngine) Compare(source, target *extractor.DatabaseSchema) *SchemaDi
 func (e *DiffEngine) compareTables(sourceTables, targetTables map[string]*extractor.TableSchema) []TableDiff {
 	var diffs []TableDiff
 
+	// 构建比较选项
+	opts := TableCompareOptions{
+		IgnoreComments:  e.ignoreRules.IgnoreComments,
+		IgnoreCharset:   e.ignoreRules.IgnoreCharset,
+		IgnoreCollation: e.ignoreRules.IgnoreCollation,
+	}
+
 	// 检查新增和修改的表
 	for name, srcTable := range sourceTables {
 		// 检查是否忽略
@@ -73,8 +80,8 @@ func (e *DiffEngine) compareTables(sourceTables, targetTables map[string]*extrac
 				Description: "新增表",
 			})
 		} else {
-			// 比较表结构
-			tableDiff := compareTables(srcTable, tgtTable)
+			// 比较表结构（使用选项）
+			tableDiff := compareTablesWithOptions(srcTable, tgtTable, opts)
 			
 			// 过滤忽略的列
 			tableDiff.ColumnDiffs = e.filterIgnoredColumns(name, tableDiff.ColumnDiffs)
@@ -84,14 +91,7 @@ func (e *DiffEngine) compareTables(sourceTables, targetTables map[string]*extrac
 			   len(tableDiff.IndexDiffs) > 0 || 
 			   len(tableDiff.FKeyDiffs) > 0 ||
 			   len(tableDiff.TableProps) > 0 {
-				// 过滤忽略的属性变更
-				tableDiff.TableProps = e.filterIgnoredProps(tableDiff.TableProps)
-				if len(tableDiff.ColumnDiffs) > 0 || 
-				   len(tableDiff.IndexDiffs) > 0 || 
-				   len(tableDiff.FKeyDiffs) > 0 ||
-				   len(tableDiff.TableProps) > 0 {
-					diffs = append(diffs, *tableDiff)
-				}
+				diffs = append(diffs, *tableDiff)
 			}
 		}
 	}

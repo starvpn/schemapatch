@@ -7,8 +7,20 @@ import (
 	"github.com/starvpn/schemapatch/internal/extractor"
 )
 
+// TableCompareOptions 表比较选项
+type TableCompareOptions struct {
+	IgnoreComments  bool
+	IgnoreCharset   bool
+	IgnoreCollation bool
+}
+
 // compareTables 比较表
 func compareTables(source, target *extractor.TableSchema) *TableDiff {
+	return compareTablesWithOptions(source, target, TableCompareOptions{})
+}
+
+// compareTablesWithOptions 带选项比较表
+func compareTablesWithOptions(source, target *extractor.TableSchema, opts TableCompareOptions) *TableDiff {
 	diff := &TableDiff{
 		TableName: source.Name,
 		DiffType:  DiffTypeModified,
@@ -25,21 +37,21 @@ func compareTables(source, target *extractor.TableSchema) *TableDiff {
 			NewValue: source.Engine,
 		})
 	}
-	if source.Charset != target.Charset {
+	if !opts.IgnoreCharset && source.Charset != target.Charset {
 		diff.TableProps = append(diff.TableProps, PropertyDiff{
 			Property: "CHARSET",
 			OldValue: target.Charset,
 			NewValue: source.Charset,
 		})
 	}
-	if source.Collation != target.Collation {
+	if !opts.IgnoreCollation && source.Collation != target.Collation {
 		diff.TableProps = append(diff.TableProps, PropertyDiff{
 			Property: "COLLATION",
 			OldValue: target.Collation,
 			NewValue: source.Collation,
 		})
 	}
-	if source.Comment != target.Comment {
+	if !opts.IgnoreComments && source.Comment != target.Comment {
 		diff.TableProps = append(diff.TableProps, PropertyDiff{
 			Property: "COMMENT",
 			OldValue: target.Comment,
@@ -48,7 +60,12 @@ func compareTables(source, target *extractor.TableSchema) *TableDiff {
 	}
 
 	// 比较列
-	diff.ColumnDiffs = compareColumns(source.Columns, target.Columns)
+	colOpts := ColumnCompareOptions{
+		IgnoreComments:  opts.IgnoreComments,
+		IgnoreCharset:   opts.IgnoreCharset,
+		IgnoreCollation: opts.IgnoreCollation,
+	}
+	diff.ColumnDiffs = compareColumnsWithOptions(source.Columns, target.Columns, colOpts)
 
 	// 比较索引
 	diff.IndexDiffs = compareIndexes(source.Indexes, target.Indexes)
@@ -94,6 +111,11 @@ func compareTables(source, target *extractor.TableSchema) *TableDiff {
 
 // compareColumns 比较列
 func compareColumns(sourceCols, targetCols []*extractor.ColumnSchema) []ColumnDiff {
+	return compareColumnsWithOptions(sourceCols, targetCols, ColumnCompareOptions{})
+}
+
+// compareColumnsWithOptions 带选项比较列
+func compareColumnsWithOptions(sourceCols, targetCols []*extractor.ColumnSchema, opts ColumnCompareOptions) []ColumnDiff {
 	var diffs []ColumnDiff
 
 	// 创建目标列映射
@@ -121,7 +143,7 @@ func compareColumns(sourceCols, targetCols []*extractor.ColumnSchema) []ColumnDi
 			})
 		} else {
 			// 比较列是否有变化
-			colDiff := compareColumn(srcCol, tgtCol)
+			colDiff := compareColumnWithOptions(srcCol, tgtCol, opts)
 			if colDiff != nil {
 				diffs = append(diffs, *colDiff)
 			}
@@ -144,8 +166,20 @@ func compareColumns(sourceCols, targetCols []*extractor.ColumnSchema) []ColumnDi
 	return diffs
 }
 
+// ColumnCompareOptions 列比较选项
+type ColumnCompareOptions struct {
+	IgnoreComments  bool
+	IgnoreCharset   bool
+	IgnoreCollation bool
+}
+
 // compareColumn 比较单个列
 func compareColumn(source, target *extractor.ColumnSchema) *ColumnDiff {
+	return compareColumnWithOptions(source, target, ColumnCompareOptions{})
+}
+
+// compareColumnWithOptions 带选项比较单个列
+func compareColumnWithOptions(source, target *extractor.ColumnSchema, opts ColumnCompareOptions) *ColumnDiff {
 	var changes []PropertyDiff
 
 	// 比较列类型
@@ -191,8 +225,8 @@ func compareColumn(source, target *extractor.ColumnSchema) *ColumnDiff {
 		})
 	}
 
-	// 比较注释
-	if source.Comment != target.Comment {
+	// 比较注释（可选忽略）
+	if !opts.IgnoreComments && source.Comment != target.Comment {
 		changes = append(changes, PropertyDiff{
 			Property: "注释",
 			OldValue: target.Comment,
@@ -217,8 +251,8 @@ func compareColumn(source, target *extractor.ColumnSchema) *ColumnDiff {
 		})
 	}
 
-	// 比较字符集
-	if source.CharsetName != target.CharsetName {
+	// 比较字符集（可选忽略）
+	if !opts.IgnoreCharset && source.CharsetName != target.CharsetName {
 		changes = append(changes, PropertyDiff{
 			Property: "字符集",
 			OldValue: target.CharsetName,
@@ -226,8 +260,8 @@ func compareColumn(source, target *extractor.ColumnSchema) *ColumnDiff {
 		})
 	}
 
-	// 比较排序规则
-	if source.CollationName != target.CollationName {
+	// 比较排序规则（可选忽略）
+	if !opts.IgnoreCollation && source.CollationName != target.CollationName {
 		changes = append(changes, PropertyDiff{
 			Property: "排序规则",
 			OldValue: target.CollationName,

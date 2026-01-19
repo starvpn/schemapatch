@@ -39,6 +39,11 @@ type MainWindow struct {
 	statusBar      *widget.Label
 	progressBar    *widget.ProgressBar
 
+	// 忽略选项
+	ignoreComments  *widget.Check
+	ignoreCharset   *widget.Check
+	ignoreCollation *widget.Check
+
 	// 按钮
 	compareBtn  *widget.Button
 	generateBtn *widget.Button
@@ -68,11 +73,27 @@ func (mw *MainWindow) buildUI() {
 	mw.sourceEnvPanel = NewEnvPanel("开发环境 (Source)", ColorGreen, config.EnvTypeDev)
 	mw.targetEnvPanel = NewEnvPanel("生产环境 (Target)", ColorPeach, config.EnvTypeProd)
 
+	// 忽略选项（先创建，loadConfig 需要用到）
+	mw.ignoreComments = widget.NewCheck("忽略注释差异", func(checked bool) {
+		mw.updateIgnoreRules()
+	})
+	mw.ignoreComments.SetChecked(true) // 默认忽略注释
+
+	mw.ignoreCharset = widget.NewCheck("忽略字符集差异", func(checked bool) {
+		mw.updateIgnoreRules()
+	})
+	mw.ignoreCharset.SetChecked(true) // 默认忽略字符集
+
+	mw.ignoreCollation = widget.NewCheck("忽略排序规则差异", func(checked bool) {
+		mw.updateIgnoreRules()
+	})
+	mw.ignoreCollation.SetChecked(true) // 默认忽略排序规则
+
 	// 设置变更回调 - 自动保存配置
 	mw.sourceEnvPanel.SetOnChanged(mw.saveConfig)
 	mw.targetEnvPanel.SetOnChanged(mw.saveConfig)
 
-	// 加载项目配置
+	// 加载项目配置（在所有 UI 组件创建后）
 	mw.loadConfig()
 
 	// 环境配置区域
@@ -84,6 +105,13 @@ func (mw *MainWindow) buildUI() {
 	// 对比按钮
 	mw.compareBtn = widget.NewButtonWithIcon("开始对比", theme.SearchIcon(), mw.onCompare)
 	mw.compareBtn.Importance = widget.HighImportance
+
+	optionsRow := container.NewHBox(
+		widget.NewLabel("对比选项:"),
+		mw.ignoreComments,
+		mw.ignoreCharset,
+		mw.ignoreCollation,
+	)
 
 	compareRow := container.NewHBox(
 		layout.NewSpacer(),
@@ -135,6 +163,7 @@ func (mw *MainWindow) buildUI() {
 	// 主布局
 	topSection := container.NewVBox(
 		envContainer,
+		optionsRow,
 		compareRow,
 	)
 
@@ -560,11 +589,17 @@ func (mw *MainWindow) loadConfig() {
 				{ID: "dev", Name: "开发环境", Type: config.EnvTypeDev, Host: "localhost", Port: 3306, Username: "root", Charset: "utf8mb4"},
 				{ID: "prod", Name: "生产环境", Type: config.EnvTypeProd, Host: "localhost", Port: 3306, Username: "root", Charset: "utf8mb4"},
 			},
+			IgnoreRules: config.IgnoreConfig{
+				IgnoreComments:  true,
+				IgnoreCharset:   true,
+				IgnoreCollation: true,
+			},
 		}
 		mw.store.AddProject(*project)
 		mw.store.SetActiveProject(project.ID)
 	}
 
+	// 加载环境配置
 	for _, env := range project.Environments {
 		envCopy := env // 避免循环变量问题
 		if env.Type == config.EnvTypeDev {
@@ -572,6 +607,17 @@ func (mw *MainWindow) loadConfig() {
 		} else if env.Type == config.EnvTypeProd {
 			mw.targetEnvPanel.SetEnvironment(&envCopy)
 		}
+	}
+
+	// 加载忽略选项（检查 nil 避免初始化时崩溃）
+	if mw.ignoreComments != nil {
+		mw.ignoreComments.SetChecked(project.IgnoreRules.IgnoreComments)
+	}
+	if mw.ignoreCharset != nil {
+		mw.ignoreCharset.SetChecked(project.IgnoreRules.IgnoreCharset)
+	}
+	if mw.ignoreCollation != nil {
+		mw.ignoreCollation.SetChecked(project.IgnoreRules.IgnoreCollation)
 	}
 }
 
@@ -600,8 +646,24 @@ func (mw *MainWindow) saveConfig() {
 	}
 	project.Environments = newEnvs
 
+	// 更新忽略规则（检查 nil 避免初始化时崩溃）
+	if mw.ignoreComments != nil {
+		project.IgnoreRules.IgnoreComments = mw.ignoreComments.Checked
+	}
+	if mw.ignoreCharset != nil {
+		project.IgnoreRules.IgnoreCharset = mw.ignoreCharset.Checked
+	}
+	if mw.ignoreCollation != nil {
+		project.IgnoreRules.IgnoreCollation = mw.ignoreCollation.Checked
+	}
+
 	// 保存
 	if err := mw.store.UpdateProject(*project); err != nil {
 		zap.S().Errorf("保存配置失败: %v", err)
 	}
+}
+
+// updateIgnoreRules 更新忽略规则并保存
+func (mw *MainWindow) updateIgnoreRules() {
+	mw.saveConfig()
 }
