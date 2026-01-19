@@ -1,0 +1,76 @@
+# SchemaPatch 默认配置模板
+
+# 项目配置
+project:
+  id: ""
+  name: "My Project"
+  
+# 环境配置
+environments:
+  # 开发环境
+  - id: "env_dev"
+    name: "开发环境"
+    type: "dev"
+    host: "localhost"
+    port: 3306
+    username: "root"
+    password: ""
+    database: ""
+    charset: "utf8mb4"
+    mysql_version: "8.0"
+    ssl_enabled: false
+    
+  # 生产环境
+  - id: "env_prod"
+    name: "生产环境"
+    type: "prod"
+    host: ""
+    port: 3306
+    username: "readonly"
+    password: ""
+    database: ""
+    charset: "utf8mb4"
+    mysql_version: "8.0"
+    ssl_enabled: false
+
+# 忽略规则
+ignore_rules:
+  # 忽略的表 (支持通配符)
+  tables:
+    - "temp_*"          # 临时表
+    - "log_*"           # 日志表
+    - "_*"              # 下划线开头的表
+    
+  # 忽略的列 (格式: table.column, 支持通配符)
+  columns:
+    - "*.created_at"    # 忽略所有表的created_at
+    - "*.updated_at"    # 忽略所有表的updated_at
+    
+  # 忽略的索引
+  indexes: []
+  
+  # 是否忽略注释变更
+  ignore_comments: true
+  
+  # 是否忽略自增值变更
+  ignore_auto_increment: true
+  
+  # 是否忽略字符集变更
+  ignore_charset: false
+  
+  # 是否忽略排序规则变更
+  ignore_collation: false
+
+# Docker验证配置
+docker:
+  # MySQL镜像
+  mysql_image: "mysql:8.0"
+  
+  # 启动超时
+  timeout: "60s"
+  
+  # 验证后是否清理容器
+  cleanup: true
+  
+  # 映射端口 (0表示随机)
+  port: 0

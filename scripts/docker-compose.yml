@@ -1,0 +1,47 @@
+# 开发测试用Docker Compose配置
+# 用于本地开发和测试
+
+version: '3.8'
+
+services:
+  # 模拟开发环境数据库
+  mysql-dev:
+    image: mysql:8.0
+    container_name: schemapatch-dev-db
+    environment:
+      MYSQL_ROOT_PASSWORD: dev_password
+      MYSQL_DATABASE: app_dev
+    ports:
+      - "3307:3306"
+    volumes:
+      - dev-data:/var/lib/mysql
+      - ./init-dev.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 模拟生产环境数据库
+  mysql-prod:
+    image: mysql:8.0
+    container_name: schemapatch-prod-db
+    environment:
+      MYSQL_ROOT_PASSWORD: prod_password
+      MYSQL_DATABASE: app_prod
+    ports:
+      - "3308:3306"
+    volumes:
+      - prod-data:/var/lib/mysql
+      - ./init-prod.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  dev-data:
+  prod-data:
