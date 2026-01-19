@@ -30,7 +30,7 @@ MySQL数据库Schema对比与升级工具，支持开发/生产环境对比、�
 
 ```bash
 # 克隆项目
-git clone https://github.com/schemapatch/schemapatch.git
+git clone https://github.com/starvpn/schemapatch.git
 cd schemapatch
 
 # 安装依赖

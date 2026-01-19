@@ -3,7 +3,7 @@ package gui
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"github.com/schemapatch/schemapatch/internal/config"
+	"github.com/starvpn/schemapatch/internal/config"
 	"go.uber.org/zap"
 )
 

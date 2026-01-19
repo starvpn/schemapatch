@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/schemapatch/schemapatch/internal/config"
-	"github.com/schemapatch/schemapatch/internal/extractor"
+	"github.com/starvpn/schemapatch/internal/config"
+	"github.com/starvpn/schemapatch/internal/extractor"
 )
 
 // DiffEngine 差异分析引擎

@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/schemapatch/schemapatch/internal/gui"
+	"github.com/starvpn/schemapatch/internal/gui"
 	"go.uber.org/zap"
 )
 

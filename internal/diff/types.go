@@ -3,7 +3,7 @@ package diff
 import (
 	"time"
 
-	"github.com/schemapatch/schemapatch/internal/extractor"
+	"github.com/starvpn/schemapatch/internal/extractor"
 )
 
 // DiffType 差异类型

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/schemapatch/schemapatch/internal/config"
-	"github.com/schemapatch/schemapatch/internal/extractor"
-	"github.com/schemapatch/schemapatch/internal/sqlgen"
+	"github.com/starvpn/schemapatch/internal/config"
+	"github.com/starvpn/schemapatch/internal/extractor"
+	"github.com/starvpn/schemapatch/internal/sqlgen"
 	"go.uber.org/zap"
 )
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/schemapatch/schemapatch/internal/config"
+	"github.com/starvpn/schemapatch/internal/config"
 )
 
 // MySQLExtractor MySQL Schema提取器

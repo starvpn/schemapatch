@@ -1,4 +1,4 @@
-module github.com/schemapatch/schemapatch
+module github.com/starvpn/schemapatch
 
 go 1.21
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/schemapatch/schemapatch/internal/extractor"
+	"github.com/starvpn/schemapatch/internal/extractor"
 )
 
 // compareTables 比较表

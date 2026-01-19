@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/schemapatch/schemapatch/internal/diff"
-	"github.com/schemapatch/schemapatch/internal/extractor"
+	"github.com/starvpn/schemapatch/internal/diff"
+	"github.com/starvpn/schemapatch/internal/extractor"
 )
 
 // GenerateOptions 生成选项

@@ -3,7 +3,7 @@ package extractor
 import (
 	"context"
 
-	"github.com/schemapatch/schemapatch/internal/config"
+	"github.com/starvpn/schemapatch/internal/config"
 )
 
 // ExtractOptions 提取选项

@@ -5,7 +5,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/theme"
-	"github.com/schemapatch/schemapatch/assets/fonts"
+	"github.com/starvpn/schemapatch/assets/fonts"
 )
 
 // SchemaPatchTheme 自定义主题

@@ -11,8 +11,8 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/schemapatch/schemapatch/internal/config"
-	"github.com/schemapatch/schemapatch/internal/extractor"
+	"github.com/starvpn/schemapatch/internal/config"
+	"github.com/starvpn/schemapatch/internal/extractor"
 )
 
 // EnvPanel 环境配置面板

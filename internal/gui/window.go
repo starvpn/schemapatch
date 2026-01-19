@@ -11,11 +11,11 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/schemapatch/schemapatch/internal/config"
-	"github.com/schemapatch/schemapatch/internal/diff"
-	"github.com/schemapatch/schemapatch/internal/docker"
-	"github.com/schemapatch/schemapatch/internal/extractor"
-	"github.com/schemapatch/schemapatch/internal/sqlgen"
+	"github.com/starvpn/schemapatch/internal/config"
+	"github.com/starvpn/schemapatch/internal/diff"
+	"github.com/starvpn/schemapatch/internal/docker"
+	"github.com/starvpn/schemapatch/internal/extractor"
+	"github.com/starvpn/schemapatch/internal/sqlgen"
 	"go.uber.org/zap"
 )
 
